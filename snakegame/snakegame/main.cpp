@@ -2,11 +2,12 @@
 #include <conio.h>
 #include <windows.h>
 using namespace std;
-
 bool gameOver;
 const int width = 20;
 const int height = 20;
-int x, y, fruitX, fruitY, score;
+int x, y, fruitX, fruitY, score, speed = 100;
+int tailX[100], tailY[100];
+int nTail;
 enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
 eDirection dir;
 
@@ -33,7 +34,20 @@ void draw() {
 			else if (i == fruitY && j == fruitX)
 				cout << "F";
 			else
-				cout << " ";
+			{
+				bool print = false;
+				for (int k = 0; k < nTail; k++) {
+					
+					if (tailX[k] == j && tailY[k] == i) {
+						cout << "o";
+						print = true;
+					}
+				}
+				if (!print) {
+					cout << " ";
+				}
+			}
+				
 
 			if (j == width - 1) 
 				cout << "#";
@@ -46,6 +60,8 @@ void draw() {
 	}
 	cout << endl;
 	cout << "Score: " << score << endl;
+
+	cout << "Speed: " << speed << endl;
 }
 void input() {
 	if (_kbhit()) {
@@ -70,6 +86,18 @@ void input() {
 	}
 }
 void logic() {
+	int prevX = tailX[0];
+	int prevY = tailY[0];
+	int prev2X, prev2Y;
+	for (int i = 1; i < nTail; i++) {
+		prev2X = tailX[i];
+		prev2Y = tailY[i];
+		tailX[i] = prevX;
+		tailY[i] = prevY;
+		prevX = prev2X;
+		prevY = prev2Y;
+
+	}
 	switch (dir)
 	{
 	case LEFT:
@@ -94,6 +122,7 @@ void logic() {
 		score += 10;
 		fruitX = rand() % width;
 		fruitY = rand() % height;
+		nTail++;
 	}
 }
 
@@ -103,7 +132,7 @@ int main() {
 		draw();
 		input();
 		logic();
-		Sleep(30);
+		Sleep(speed);
 	}
 	return 0;
 }
